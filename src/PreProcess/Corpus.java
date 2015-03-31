@@ -11,7 +11,7 @@ import org.ansj.splitWord.analysis.ToAnalysis;
 /* 
  * Created on March 12 14:02:14 2015
  * author: Xiangfu Song 
- * email : bintasong@google.com
+ * email : bintasong@gmail.com
  * 
  * */
 public class Corpus{
@@ -20,8 +20,8 @@ public class Corpus{
 	public static HashMap<String,Integer> wordtoindex;//词语到索引的hash表
 	public static ArrayList<String> noiselist;//噪声单词列表
 	
-	public double alpha ; //通常情况是 50 / K
-	public double beta ;//通常 0.1
+	public double alpha ; //通常情况是 ( 50/K ) 
+	public double beta ;//通常是 0.1
 	public int V;//字典词汇量
 	public int M;//文档数量
 	public int K;//主题数目
@@ -30,7 +30,10 @@ public class Corpus{
 	public int [][] nkw;//每行对应某个主题上词语的个数分布. K*V
 	public int [] nmkSum;//文档-主题 每行的求和
 	public int [] nkwSum;//主题-词语 每行的总和
-
+    
+	//public double[][] theta;//对应 词语-主题 分布 ，V*K,在我的程序中这个不重要，所以不需要也可以
+	public double[][] phi; //重要的是 文档-主题 分布，M*K
+	
 	public Corpus(int topicnum,double alpha,double beta){
 		vacabulary = new ArrayList<String>();
 		docs = new ArrayList<Document>();
@@ -115,7 +118,7 @@ public class Corpus{
 				}
 			}
 			List<Term> termslist = splitWords(words);
-			Document doc = new Document(docFile.getAbsolutePath(),termslist);
+			Document doc = new Document(docFile.getName(),termslist);
 			docs.add(doc);
 			M += 1;
 		}	
@@ -126,6 +129,7 @@ public class Corpus{
 		nkw = new int[K][V];
 		nmkSum = new int[M];
 		nkwSum = new int[K];
+		phi = new double[M][K];
 		
 		z = new int[M][];
 		//随机主题赋值

@@ -28,9 +28,10 @@ public class LDASampling{
 		System.out.println("iteration...");
 		corpus.sampling(iteration);
 		System.out.println("iteration done");
-		FollowWork fw = new FollowWork(corpus,"C:/Users/binta/Desktop/Data/LDAResults/document-topic.txt","C:/Users/binta/Desktop/Data/LDAResults/topic-word.txt");
+		FollowWork fw = new FollowWork(corpus,"C:/Users/binta/Desktop/Data/LDAResults/document-topic.txt","C:/Users/binta/Desktop/Data/LDAResults/topic-word.txt","C:/Users/binta/Desktop/Data/LDAResults/phi.txt");
 		fw.sortMKandSave();
-		fw.sortKWandSave();	
+		fw.sortKWandSave();
+		fw.writePhi();
 		System.out.println("lda done");
 	}
 }

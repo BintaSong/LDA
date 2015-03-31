@@ -12,7 +12,7 @@ import java.util.Collections;
 /* 
  * Created on March 16 14:02:14 2015
  * author: Xiangfu Song 
- * email : bintasong@google.com
+ * email : bintasong@gmail.com
  * 
  * */
 class KW{
@@ -51,11 +51,13 @@ public class FollowWork{
 	public Corpus corpus;
 	public String MKpath;
 	public String KWpath;
+	public String Phipath;
 	
-	public FollowWork(Corpus corpus,String MKpath,String KWpath){
+	public FollowWork(Corpus corpus,String MKpath,String KWpath,String Phipath){
 		this.corpus = corpus;
 		this.MKpath = MKpath;
 		this.KWpath = KWpath;
+		this.Phipath = Phipath;
 	}
 	
 	public void sortKWandSave(){
@@ -105,7 +107,9 @@ public class FollowWork{
 				//int nmkSum = 0;
 				for(k = 0;k < corpus.K;k++){
 					mi.add(new MK(m,k,corpus.nmk[m][k]));
-					//nmkSum += mi.get(k).topicNumber;
+					
+					//统计每个文档中的的主题分布概率（未排序）
+					corpus.phi[m][k] = (double)corpus.nmk[m][k]/corpus.nmkSum[m]; 
 				}
 				Collections.sort(mi,comp2);
 				String line = corpus.docs.get(m).docname+":  ";
@@ -128,6 +132,35 @@ public class FollowWork{
 					writer.close();
 				} catch (IOException e) {
 					System.out.println("关闭 topic-word文档错误!");
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public void writePhi(){
+		BufferedWriter writer = null;
+		try{
+			writer = new BufferedWriter(new FileWriter(Phipath)); 
+			
+			int m,k;
+			for(m = 0;m < corpus.M;m++){
+				String line = corpus.docs.get(m).docname + " : ";
+				for(k = 0;k < corpus.K;k++){
+					line += String.valueOf(corpus.phi[m][k]) + " || ";	
+				}
+				writer.write(line + "\n");
+			}
+			//System.out.println("写入 phi 完成！");
+		}catch(IOException e){
+			System.out.println("写入 phi 文档错误");
+			e.printStackTrace();				
+		}finally{
+			if (writer != null) {
+			try {
+					writer.close();
+				} catch (IOException e) {
+					System.out.println("关闭 phi文档错误!");
 					e.printStackTrace();
 				}
 			}
