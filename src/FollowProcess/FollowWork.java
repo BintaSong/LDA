@@ -2,18 +2,17 @@ package FollowProcess;
 import PreProcess.Corpus;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collections;
 /* 
+ * 
  * Created on March 16 14:02:14 2015
  * author: Xiangfu Song 
  * email : bintasong@gmail.com
- * 
+ *
  * */
 class KW{
 	public int topicIndex;
@@ -73,8 +72,8 @@ public class FollowWork{
 					ki.add(new KW(k,w,corpus.nkw[k][w]));
 				}
 				Collections.sort(ki,comp1);
-				String line = "topic " + String.valueOf(k)+":  ";
-				for(w = 0;w < 20;w++){
+				String line = "topic " + String.valueOf(k)+": ";
+				for(w = 0;w < 30;w++){
 					KW kw = ki.get(w);
 					line += corpus.getWordByIndex(kw.wordIndex)/*+":"+String.valueOf(kw.wordNumber/(double)corpus.nkwSum[k])+*/+"|";
 				}
@@ -138,14 +137,14 @@ public class FollowWork{
 		}
 	}
 
-	public void writePhi(){
+	public void writeTheta(){
 		BufferedWriter writer = null;
 		try{
 			writer = new BufferedWriter(new FileWriter(Phipath)); 
 			
 			int m,k;
 			for(m = 0;m < corpus.M;m++){
-				String line = corpus.docs.get(m).docname + " : ";
+				String line = corpus.docs.get(m).docname + " : ||";
 				for(k = 0;k < corpus.K;k++){
 					line += String.valueOf(corpus.phi[m][k]) + " || ";	
 				}

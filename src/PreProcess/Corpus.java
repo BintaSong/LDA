@@ -4,23 +4,25 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.io.*;
-import java.util.Comparator;
+//import java.util.Comparator;
 
 import org.ansj.domain.Term;
 import org.ansj.splitWord.analysis.ToAnalysis;
+
 /* 
  * Created on March 12 14:02:14 2015
  * author: Xiangfu Song 
  * email : bintasong@gmail.com
  * 
  * */
+
 public class Corpus{
 	public static ArrayList<String> vacabulary;//文本集字典列表
 	public ArrayList<Document> docs;//文档集合
 	public static HashMap<String,Integer> wordtoindex;//词语到索引的hash表
 	public static ArrayList<String> noiselist;//噪声单词列表
 	
-	public double alpha ; //通常情况是 ( 50/K ) 
+	public double alpha ; //通常情况是 (50/K) 
 	public double beta ;//通常是 0.1
 	public int V;//字典词汇量
 	public int M;//文档数量
@@ -44,7 +46,7 @@ public class Corpus{
 		K = topicnum;
 		V = 0;
 		M = 0;
-		addNoise("./Data/StopWords/stopword.txt");
+		addNoise("./Data/StopWords/stopword-ch.txt");
 	}
 	
 	public void addNoise(String noisefilepath){
@@ -117,6 +119,8 @@ public class Corpus{
 					}
 				}
 			}
+			//words.replaceAll("\\s", "");
+			//words.replaceAll("[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]", "");
 			List<Term> termslist = splitWords(words);
 			Document doc = new Document(docFile.getName(),termslist);
 			docs.add(doc);
