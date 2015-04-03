@@ -9,10 +9,11 @@ import FollowProcess.FollowWork;
  * author: Xiangfu Song 
  * email : bintasong@gmail.com
  * 
+ * 
  * */
 public class LDASampling{
-	public static int topicNum = 20;
-	public static int iteration = 100;
+	public static int topicNum = 10;
+	public static int iteration = 400;
 	
 	public static void main(String[] argv){
 		

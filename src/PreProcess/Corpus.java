@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.io.*;
-//import java.util.Comparator;
+
+//import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.ansj.domain.Term;
 import org.ansj.splitWord.analysis.ToAnalysis;
@@ -21,6 +23,8 @@ public class Corpus{
 	public ArrayList<Document> docs;//文档集合
 	public static HashMap<String,Integer> wordtoindex;//词语到索引的hash表
 	public static ArrayList<String> noiselist;//噪声单词列表
+	
+	public Pattern pattern ; 
 	
 	public double alpha ; //通常情况是 (50/K) 
 	public double beta ;//通常是 0.1
@@ -46,6 +50,9 @@ public class Corpus{
 		K = topicnum;
 		V = 0;
 		M = 0;
+		
+		pattern = Pattern.compile(".*[0-9a-zA-Z]{1,}.*");
+		
 		addNoise("./Data/StopWords/stopword-ch.txt");
 	}
 	
@@ -88,7 +95,7 @@ public class Corpus{
 	public void removeNoise(List<Term> termlist){
 		//将分词后的List<Term>移除掉noise
 		for(int i = 0;i < termlist.size();i++ ){
-			if(noiselist.contains(termlist.get(i).getName())){
+			if(noiselist.contains(termlist.get(i).getName())||termlist.get(i).getName().length() < 2||pattern.matcher(termlist.get(i).getName()).matches()){
 				termlist.remove(i);
 				i--;
 			}
@@ -97,6 +104,7 @@ public class Corpus{
 	
 	public void addDoc(String docspath){
 		for(File docFile : new File(docspath).listFiles()){
+			
 			BufferedReader reader = null;
 			String words = "";
 			String line = "";
