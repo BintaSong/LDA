@@ -12,8 +12,8 @@ import FollowProcess.FollowWork;
  * 
  * */
 public class LDASampling{
-	public static int topicNum = 10;
-	public static int iteration = 400;
+	public static int topicNum = 6;
+	public static int iteration = 1000;
 	
 	public static void main(String[] argv){
 		

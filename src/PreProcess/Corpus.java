@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.io.*;
-
 //import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -85,13 +84,6 @@ public class Corpus{
 		}
 	}
 	
-	public List<Term> splitWords(String words){
-		//返回分词后的List<Term>列表
-		List<Term> termlist= ToAnalysis.parse(words);
-		removeNoise(termlist);
-		return termlist;
-	}
-	
 	public void removeNoise(List<Term> termlist){
 		//将分词后的List<Term>移除掉noise
 		for(int i = 0;i < termlist.size();i++ ){
@@ -104,36 +96,39 @@ public class Corpus{
 	
 	public void addDoc(String docspath){
 		for(File docFile : new File(docspath).listFiles()){
-			
-			BufferedReader reader = null;
-			String words = "";
-			String line = "";
-			try{
-				reader = new BufferedReader(new FileReader(docFile)); 
-				while( (line = reader.readLine()) != null ){
-					//我们的文件每行存储一个词语
-					words = words + line.trim();
-				}
-			}catch(IOException e){
-				System.out.println("读取文档错误");
-				e.printStackTrace();				
-			}finally{
-				if (reader != null) {
-					try {
-						reader.close();
-					} catch (IOException e) {
-						System.out.println("关闭文档错误!");
-						e.printStackTrace();
+			if(docFile.isDirectory()){
+				addDoc(docFile.getAbsolutePath());
+			}
+			else{
+				BufferedReader reader = null;
+				String words = "";
+				String line = "";
+				try{
+					reader = new BufferedReader(new FileReader(docFile)); 
+					while( (line = reader.readLine()) != null ){
+						//我们的文件每行存储一个词语
+						words = words + line.trim();
+					}
+				}catch(IOException e){
+					System.out.println("读取文档错误");
+					e.printStackTrace();				
+				}finally{
+					if (reader != null) {
+						try {
+							reader.close();
+						} catch (IOException e) {
+							System.out.println("关闭文档错误!");
+							e.printStackTrace();
+						}
 					}
 				}
-			}
-			//words.replaceAll("\\s", "");
-			//words.replaceAll("[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]", "");
-			List<Term> termslist = splitWords(words);
-			Document doc = new Document(docFile.getName(),termslist);
-			docs.add(doc);
-			M += 1;
-		}	
+				//List<Term> termslist = splitWords(words);
+				String[] wordarray =  words.trim().split(" ");
+				Document doc = new Document(docFile.getName(),wordarray);
+				docs.add(doc);
+				M += 1;
+			}	
+		}
 	}
 	
 	public void init(){
@@ -156,7 +151,31 @@ public class Corpus{
 				nkwSum[randtopic] += 1;
 			}
 			nmkSum[i] += N;
-		}		
+		}	
+		/*for(int k = 0;k < K;k++){
+			System.out.print(nkwSum[k]+"--> ");
+			int count = 0;
+			for(int v = 0;v < V;v++){
+				System.out.print(nkw[k][v]+" ");
+				count += nkw[k][v];
+			}
+			if(count != nkwSum[k])
+				System.out.println("\n"+k+"fuck");
+			else{
+				System.out.println("\n"+"good");
+			}
+			System.out.println(this.getWordByIndex(1));
+		}*/
+		/*
+		for(int m = 0;m < M;m++){
+			//System.out.print(nkwSum[k]+"--> ");
+			int count = 0;
+			for(int w = 0;w < docs.get(m).docwords.length;w++){
+				System.out.print(this.getWordByIndex(docs.get(m).docwords[w])+" ");
+			}
+			System.out.println();
+		}
+		*/
 	}
 
 	public int choose(double p[],int topicnum){
@@ -204,7 +223,7 @@ public class Corpus{
 	
 	public void sampling(int iteration){
 		for(int i = 0;i < iteration;i++){
-			//System.out.println("iteration #" );
+			System.out.println("iteration # " + i );
 			//System.out.println(this.vacabulary);
 			for(int m = 0;m < M;m++ ){
 				int N = docs.get(m).docwords.length; 
@@ -212,6 +231,13 @@ public class Corpus{
 					z[m][n] = newTopic(m,n);
 				}
 			}
+		}
+		
+		for(int k = 0;k < K;k++){
+			for(int v = 0;v < 100;v++){
+				System.out.print(nkw[k][v]+" ");
+			}		
+			System.out.println();
 		}
 	}
 	
@@ -222,26 +248,28 @@ public class Corpus{
 	
 	public class Document{
 		public String docname;//文档名字
-		public int[] docwords;//文档词语列表，存储词语在字典的索引值
-		
-		public Document(String dname,List<Term> words){
+		public int[] docwords;//文档词语列表，存储词语在字典的索引值	
+		public Document(String dname,String[] words){
 			//words:已经将噪声词语删除的字符列表
 			this.docname = dname;
-			docwords = new int[words.size()];
-			for(int i = 0;i < words.size();i++ ){
-				String word = words.get(i).getName();
+			docwords = new int[words.length];
+			int doc_len = 0;//初始化文档长度
+			for(int i = 0;i < words.length;i++ ){
+				String word = words[i];
+				//if(pattern.matcher(word).matches()) continue ;
+				//if(word.length() < 2||pattern.matcher(word).matches()||noiselist.contains(word)) continue ;
 				if(wordtoindex.containsKey(word)){
 					//hash表中已经包含了该词语
-					docwords[i] = wordtoindex.get(word);
+					docwords[doc_len++] = wordtoindex.get(word);
 				}
 				else{//否则，将新词汇加入词汇字典和hash表
 					int newindex = wordtoindex.size();
 					vacabulary.add(word);
 					wordtoindex.put(word, newindex);
-					docwords[i] = newindex;
+					docwords[doc_len++] = newindex;
 					V += 1;
 				}
-			}			
+			}
 		}
 	}
 

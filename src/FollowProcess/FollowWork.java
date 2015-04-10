@@ -144,9 +144,9 @@ public class FollowWork{
 			
 			int m,k;
 			for(m = 0;m < corpus.M;m++){
-				String line = corpus.docs.get(m).docname + " : ||";
+				String line = corpus.docs.get(m).docname + " : ";
 				for(k = 0;k < corpus.K;k++){
-					line += String.valueOf(corpus.phi[m][k]) + " || ";	
+					line += String.valueOf(corpus.phi[m][k]) + " ";	
 				}
 				writer.write(line + "\n");
 			}
